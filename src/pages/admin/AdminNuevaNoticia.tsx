@@ -1,8 +1,10 @@
 
+
+
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, X, ImagePlus } from "lucide-react";
 import { supabase } from "../../integrations/supabase/client";
 import EditorContenido from "../../components/admin/EditorContenido";
 
@@ -14,8 +16,39 @@ export default function AdminNuevaNoticia() {
   const [contenido, setContenido] = useState("");
   const [publicado, setPublicado] = useState(false);
 
+  const [imagenes, setImagenes] = useState<File[]>([]);
+
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState("");
+
+  const seleccionarImagenes = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (!e.target.files) return;
+
+    const archivos = Array.from(e.target.files);
+
+    const imagenesValidas = archivos.filter((archivo) =>
+      archivo.type.startsWith("image/")
+    );
+
+    if (imagenesValidas.length !== archivos.length) {
+      setError("Solo se permiten archivos de imagen.");
+      return;
+    }
+
+    setError("");
+    setImagenes((anteriores) => [...anteriores, ...imagenesValidas]);
+
+    // Permite volver a seleccionar el mismo archivo
+    e.target.value = "";
+  };
+
+  const eliminarImagen = (indice: number) => {
+    setImagenes((anteriores) =>
+      anteriores.filter((_, index) => index !== indice)
+    );
+  };
 
   const guardarNoticia = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,7 +78,8 @@ export default function AdminNuevaNoticia() {
         return;
       }
 
-      const { error: insertError } = await supabase
+      // 1. Crear la noticia
+      const { data: noticia, error: insertError } = await supabase
         .from("noticias_financieras")
         .insert({
           titulo: titulo.trim(),
@@ -53,12 +87,65 @@ export default function AdminNuevaNoticia() {
           contenido: contenido.trim(),
           publicado,
           creado_por: user.id,
-        });
+        })
+        .select("id")
+        .single();
 
-      if (insertError) {
+      if (insertError || !noticia) {
         console.error("Error creando noticia:", insertError);
         setError("No se pudo guardar la noticia.");
         return;
+      }
+
+      // 2. Subir imágenes
+      for (let i = 0; i < imagenes.length; i++) {
+        const imagen = imagenes[i];
+
+        const extension =
+          imagen.name.split(".").pop()?.toLowerCase() || "jpg";
+
+        const nombreArchivo = `${noticia.id}/${crypto.randomUUID()}.${extension}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("noticias-financieras")
+          .upload(nombreArchivo, imagen, {
+            cacheControl: "3600",
+            upsert: false,
+          });
+
+        if (uploadError) {
+          console.error("Error subiendo imagen:", uploadError);
+          setError(
+            `La noticia se guardó, pero no se pudo subir la imagen "${imagen.name}".`
+          );
+          return;
+        }
+
+        // 3. Obtener URL pública
+        const { data: publicUrlData } = supabase.storage
+          .from("noticias-financieras")
+          .getPublicUrl(nombreArchivo);
+
+        // 4. Registrar imagen en la base de datos
+        const { error: imagenError } = await supabase
+          .from("noticias_imagenes")
+          .insert({
+            noticia_id: noticia.id,
+            imagen_url: publicUrlData.publicUrl,
+            orden: i,
+          });
+
+        if (imagenError) {
+          console.error(
+            "Error registrando imagen en noticias_imagenes:",
+            imagenError
+          );
+
+          setError(
+            `La noticia se guardó, pero no se pudo registrar la imagen "${imagen.name}".`
+          );
+          return;
+        }
       }
 
       navigate("/admin/noticias");
@@ -79,6 +166,7 @@ export default function AdminNuevaNoticia() {
             <h1 className="text-xl font-semibold text-slate-900">
               Administración de noticias
             </h1>
+
             <p className="text-sm text-slate-500">
               Crear nueva noticia
             </p>
@@ -102,6 +190,7 @@ export default function AdminNuevaNoticia() {
             <h2 className="text-lg font-semibold text-slate-900">
               Nueva noticia
             </h2>
+
             <p className="mt-1 text-sm text-slate-500">
               Completa la información de la noticia.
             </p>
@@ -153,12 +242,78 @@ export default function AdminNuevaNoticia() {
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Contenido
               </label>
-            
+
               <EditorContenido
                 value={contenido}
                 onChange={setContenido}
                 disabled={guardando}
               />
+            </div>
+
+            {/* Imágenes */}
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Imágenes de la noticia
+              </label>
+
+              <div className="border border-dashed border-slate-300 bg-slate-50 p-5">
+                <label
+                  htmlFor="imagenes"
+                  className="flex cursor-pointer flex-col items-center justify-center gap-2 py-4 text-center hover:bg-slate-100"
+                >
+                  <ImagePlus className="h-8 w-8 text-slate-400" />
+
+                  <span className="text-sm font-medium text-slate-700">
+                    Seleccionar imágenes
+                  </span>
+
+                  <span className="text-xs text-slate-500">
+                    Puedes seleccionar una o varias imágenes
+                  </span>
+
+                  <input
+                    id="imagenes"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={seleccionarImagenes}
+                    disabled={guardando}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              {/* Vista previa */}
+              {imagenes.length > 0 && (
+                <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  {imagenes.map((imagen, index) => (
+                    <div
+                      key={`${imagen.name}-${index}`}
+                      className="relative overflow-hidden border border-slate-200 bg-white"
+                    >
+                      <img
+                        src={URL.createObjectURL(imagen)}
+                        alt={`Vista previa ${index + 1}`}
+                        className="h-40 w-full object-cover"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => eliminarImagen(index)}
+                        disabled={guardando}
+                        className="absolute right-2 top-2 inline-flex h-7 w-7 items-center justify-center bg-white text-slate-700 shadow hover:bg-slate-100 disabled:opacity-50"
+                        title="Eliminar imagen"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+
+                      <div className="truncate border-t border-slate-200 px-2 py-2 text-xs text-slate-500">
+                        {imagen.name}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Publicar */}
@@ -216,3 +371,4 @@ export default function AdminNuevaNoticia() {
     </div>
   );
 }
+
