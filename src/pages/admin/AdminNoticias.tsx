@@ -66,22 +66,50 @@ export default function AdminNoticias() {
 
   const eliminarNoticia = async (id: string) => {
     const confirmar = window.confirm(
-      "¿Estás seguro de que deseas eliminar esta noticia?",
+      "¿Estás seguro de que deseas eliminar esta noticia?\n\nTambién se eliminarán las imágenes asociadas.",
     );
-
+  
     if (!confirmar) return;
-
-    const { error } = await supabase
-      .from("noticias_financieras")
-      .delete()
-      .eq("id", id);
-
+  
+    setError("");
+  
+    const { data, error } = await supabase.functions.invoke(
+      "eliminar-noticia",
+      {
+        body: {
+          noticia_id: id,
+        },
+      },
+    );
+  
+  
     if (error) {
-      console.error("Error eliminando noticia:", error);
-      setError("No se pudo eliminar la noticia.");
+      console.error(
+        "Error llamando a eliminar-noticia:",
+        error,
+      );
+  
+      setError(
+        "No se pudo eliminar la noticia. Las imágenes no fueron eliminadas.",
+      );
+  
       return;
     }
-
+  
+    if (!data?.success) {
+      console.error(
+        "Error de la función:",
+        data?.error,
+      );
+  
+      setError(
+        data?.error ||
+          "No se pudo eliminar la noticia.",
+      );
+  
+      return;
+    }
+  
     setNoticias((actuales) =>
       actuales.filter((noticia) => noticia.id !== id),
     );

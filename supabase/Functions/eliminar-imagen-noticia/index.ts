@@ -127,7 +127,7 @@ Deno.serve(async (req) => {
         {
           success: false,
           error:
-            "No tienes permisos para eliminar noticias.",
+            "No tienes permisos para eliminar imágenes.",
         },
         403,
       );
@@ -135,124 +135,109 @@ Deno.serve(async (req) => {
 
     // Leer body
     const body = await req.json();
-    const noticiaId = body.noticia_id;
 
-    if (!noticiaId) {
+    const noticiaId = body.noticia_id;
+    const imagenId = body.imagen_id;
+
+    if (!noticiaId || !imagenId) {
       return jsonResponse(
         {
           success: false,
           error:
-            "No se recibió el ID de la noticia.",
+            "Se requiere el ID de la noticia y el ID de la imagen.",
         },
         400,
       );
     }
 
-    // Verificar que exista la noticia
+    // Buscar la imagen y verificar
+    // que pertenece a la noticia indicada
     const {
-      data: noticia,
-      error: noticiaError,
+      data: imagen,
+      error: imagenError,
     } = await supabaseAdmin
-      .from("noticias_financieras")
-      .select("id")
-      .eq("id", noticiaId)
+      .from("noticias_imagenes")
+      .select("id, noticia_id, imagen_url")
+      .eq("id", imagenId)
+      .eq("noticia_id", noticiaId)
       .maybeSingle();
 
-    if (noticiaError) {
-      throw noticiaError;
+    if (imagenError) {
+      throw imagenError;
     }
 
-    if (!noticia) {
+    if (!imagen) {
       return jsonResponse(
         {
           success: false,
-          error: "La noticia no existe.",
+          error:
+            "La imagen no existe o no pertenece a esta noticia.",
         },
         404,
       );
     }
 
-    // Buscar imágenes asociadas
-    const {
-      data: imagenes,
-      error: imagenesError,
-    } = await supabaseAdmin
-      .from("noticias_imagenes")
-      .select("id, imagen_url")
-      .eq("noticia_id", noticiaId);
-
-    if (imagenesError) {
-      throw imagenesError;
-    }
-
+    // Obtener ruta del archivo en Storage
     const marcador =
       "/noticias-financieras/";
 
-    const rutasStorage: string[] = [];
+    const posicion =
+      imagen.imagen_url.indexOf(marcador);
 
-    // Construir rutas de Storage
-    for (const imagen of imagenes ?? []) {
-      const posicion =
-        imagen.imagen_url.indexOf(marcador);
-
-      // Si encontramos una URL inválida,
-      // detenemos el proceso antes de borrar nada.
-      if (posicion === -1) {
-        throw new Error(
-          `La imagen ${imagen.id} tiene una URL de Storage inválida.`,
-        );
-      }
-
-      const ruta =
-        imagen.imagen_url.substring(
-          posicion + marcador.length,
-        );
-
-      if (!ruta) {
-        throw new Error(
-          `La imagen ${imagen.id} no tiene una ruta válida.`,
-        );
-      }
-
-      rutasStorage.push(ruta);
+    if (posicion === -1) {
+      throw new Error(
+        "La imagen tiene una URL de Storage inválida.",
+      );
     }
 
-    // Eliminar imágenes físicas
-    if (rutasStorage.length > 0) {
-      const {
-        data: storageData,
-        error: storageError,
-      } = await supabaseAdmin.storage
-        .from("noticias-financieras")
-        .remove(rutasStorage);
-
-      console.log(
-        "Respuesta Storage:",
-        storageData,
+    const rutaStorage =
+      imagen.imagen_url.substring(
+        posicion + marcador.length,
       );
 
-      if (storageError) {
-        console.error(
-          "Error eliminando imágenes:",
-          storageError,
-        );
-
-        throw new Error(
-          `No se pudieron eliminar las imágenes: ${storageError.message}`,
-        );
-      }
+    if (!rutaStorage) {
+      throw new Error(
+        "La imagen no tiene una ruta válida en Storage.",
+      );
     }
 
-    // Eliminar noticia
-    //
-    // noticias_imagenes se elimina automáticamente
-    // debido al ON DELETE CASCADE.
+    console.log(
+      "Eliminando archivo:",
+      rutaStorage,
+    );
+
+    // Eliminar archivo físico del bucket
+    const {
+      data: storageData,
+      error: storageError,
+    } = await supabaseAdmin.storage
+      .from("noticias-financieras")
+      .remove([rutaStorage]);
+
+    console.log(
+      "Respuesta Storage:",
+      storageData,
+    );
+
+    if (storageError) {
+      console.error(
+        "Error eliminando archivo:",
+        storageError,
+      );
+
+      throw new Error(
+        `No se pudo eliminar la imagen del Storage: ${storageError.message}`,
+      );
+    }
+
+    // Eliminar registro de la tabla
     const {
       error: deleteError,
     } = await supabaseAdmin
-      .from("noticias_financieras")
+      .from("noticias_imagenes")
       .delete()
-      .eq("id", noticiaId);
+      .eq("id", imagenId)
+      .eq("noticia_id", noticiaId);
 
     if (deleteError) {
       throw deleteError;
@@ -261,11 +246,11 @@ Deno.serve(async (req) => {
     return jsonResponse({
       success: true,
       message:
-        "La noticia y sus imágenes fueron eliminadas correctamente.",
+        "La imagen fue eliminada correctamente.",
     });
   } catch (error) {
     console.error(
-      "Error eliminando noticia:",
+      "Error eliminando imagen:",
       error,
     );
 

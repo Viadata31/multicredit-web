@@ -128,98 +128,68 @@ export default function AdminEditarNoticia() {
     );
   };
 
-  const eliminarImagenExistente = async (imagen: ImagenExistente) => {
-    if (!id) return;
-  
+  const eliminarImagenExistente = async (
+    imagen: ImagenExistente,
+  ) => {
     const confirmar = window.confirm(
-      "¿Deseas eliminar esta imagen? Esta acción no se puede deshacer."
+      "¿Estás seguro de que deseas eliminar esta imagen?",
     );
   
-    if (!confirmar) return;
-  
-    setError("");
-    setGuardando(true);
+    if (!confirmar) {
+      return;
+    }
   
     try {
-      // 1. Obtener la ruta del archivo desde la URL
-      const marcador = "/noticias-financieras/";
-      const posicion = imagen.imagen_url.indexOf(marcador);
+      setError("");
+      setGuardando(true);
   
-      if (posicion === -1) {
-        setError("No se pudo determinar la ubicación de la imagen.");
-        return;
-      }
+      const { data, error: functionError } =
+        await supabase.functions.invoke(
+          "eliminar-imagen-noticia",
+          {
+            body: {
+              noticia_id: id,
+              imagen_id: imagen.id,
+            },
+          },
+        );
   
-      const rutaArchivo = imagen.imagen_url.substring(
-        posicion + marcador.length
-      );
-  
-      console.log("URL completa:", imagen.imagen_url);
-      console.log("Ruta Storage:", rutaArchivo);
-  
-      // 2. Comprobar cómo Storage está interpretando la ruta
-      const partesRuta = rutaArchivo.split("/");
-      const carpeta = partesRuta.slice(0, -1).join("/");
-      const nombreArchivo = partesRuta[partesRuta.length - 1];
-  
-      const { data: archivos, error: listarError } =
-        await supabase.storage
-          .from("noticias-financieras")
-          .list(carpeta);
-  
-      console.log("Carpeta consultada:", carpeta);
-      console.log("Archivo que buscamos:", nombreArchivo);
-      console.log("Archivos encontrados en Storage:", archivos);
-      console.log("Error al listar:", listarError);
-  
-      // 3. Intentar eliminar el archivo de Storage
-      const { data: storageData, error: storageError } =
-        await supabase.storage
-          .from("noticias-financieras")
-          .remove([rutaArchivo]);
-  
-      console.log("Respuesta Storage:", storageData);
-      console.log("Error Storage:", storageError);
-  
-      if (storageError) {
+      if (functionError) {
         console.error(
-          "Error eliminando archivo del Storage:",
-          storageError
+          "Error de la Edge Function:",
+          functionError,
         );
   
-        setError(
-          `No se pudo eliminar la imagen del Storage: ${storageError.message}`
+        throw new Error(
+          functionError.message ||
+            "No se pudo eliminar la imagen.",
         );
-  
-        return;
       }
   
-      // 4. Eliminar el registro de la tabla
-      const { error: dbError } = await supabase
-        .from("noticias_imagenes")
-        .delete()
-        .eq("id", imagen.id);
-  
-      if (dbError) {
-        console.error(
-          "Error eliminando registro de imagen:",
-          dbError
+      if (!data?.success) {
+        throw new Error(
+          data?.error ||
+            "No se pudo eliminar la imagen.",
         );
-  
-        setError(
-          "El archivo fue eliminado del Storage, pero no se pudo eliminar su registro."
-        );
-  
-        return;
       }
   
-      // 5. Actualizar la pantalla
-      setImagenesExistentes((anteriores) =>
-        anteriores.filter((item) => item.id !== imagen.id)
+      // Actualizar la interfaz
+      setImagenesExistentes((imagenes) =>
+        imagenes.filter(
+          (item) => item.id !== imagen.id,
+        ),
       );
     } catch (error) {
-      console.error("Error inesperado eliminando imagen:", error);
-      setError("Ocurrió un error al eliminar la imagen.");
+      console.error(
+        "Error eliminando imagen:",
+        error,
+      );
+  
+      setError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar la imagen.",
+      );
     } finally {
       setGuardando(false);
     }
