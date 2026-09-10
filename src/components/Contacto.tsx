@@ -1,8 +1,19 @@
 import { useState } from "react";
 import { supabase } from "../integrations/supabase/client";
 
+const formatTelefono = (value: string) => {
+  const numeros = value.replace(/\D/g, "").slice(0, 8);
+
+  if (numeros.length > 4) {
+    return `${numeros.slice(0, 4)}-${numeros.slice(4)}`;
+  }
+
+  return numeros;
+};
+
 export function Contacto() {
   const [enviando, setEnviando] = useState(false);
+  const [telefono, setTelefono] = useState("");
 
   async function handleSubmit(
     e: React.FormEvent<HTMLFormElement>,
@@ -16,7 +27,7 @@ export function Contacto() {
       formData.get("nombre") ?? "",
     ).trim();
 
-    const telefono = String(
+    const telefonoFormateado = String(
       formData.get("telefono") ?? "",
     ).trim();
 
@@ -39,7 +50,7 @@ export function Contacto() {
         .from("contactos_web")
         .insert({
           nombre,
-          telefono,
+          telefono: telefonoFormateado,
           correo,
           servicio,
           mensaje: mensaje || null,
@@ -47,11 +58,11 @@ export function Contacto() {
 
       if (error) {
         console.error("Error de Supabase:", error);
-      
+
         alert(
           `Error: ${error.message}`,
         );
-      
+
         return;
       }
 
@@ -60,6 +71,7 @@ export function Contacto() {
       );
 
       form.reset();
+      setTelefono("");
     } catch (error) {
       console.error(
         "Error enviando formulario:",
@@ -135,6 +147,10 @@ export function Contacto() {
                   required
                   autoComplete="name"
                   placeholder="Escribe tu nombre"
+                  onChange={(e) => {
+                    e.target.value =
+                      e.target.value.toUpperCase();
+                  }}
                   className="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-orange-600 focus:ring-2 focus:ring-orange-600/20"
                 />
               </div>
@@ -151,9 +167,15 @@ export function Contacto() {
                   id="telefono"
                   name="telefono"
                   type="tel"
+                  inputMode="numeric"
                   required
                   autoComplete="tel"
-                  placeholder="Ej. 6000-0000"
+                  placeholder="6000-0000"
+                  value={telefono}
+                  onChange={(e) =>
+                    setTelefono(formatTelefono(e.target.value))
+                  }
+                  maxLength={9}
                   className="w-full rounded-lg border border-slate-300 px-4 py-3 text-slate-900 outline-none transition focus:border-orange-600 focus:ring-2 focus:ring-orange-600/20"
                 />
               </div>
