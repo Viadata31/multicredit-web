@@ -234,10 +234,6 @@ export function Contacto() {
                     Sector público
                   </option>
 
-                  <option value="sector-privado">
-                    Sector privado
-                  </option>
-
                   <option value="asesoria-crediticia">
                     Asesoría crediticia
                   </option>

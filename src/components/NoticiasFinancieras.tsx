@@ -1,6 +1,18 @@
 
+//📐 Recomendación principal para la imagenes a subir 
+//Para las imágenes que subas al panel de administración:
+//1200 × 675 px
+//Es una proporción 16:9, muy adecuada para noticias web.
+
+
 import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { supabase } from "../integrations/supabase/client";
 
 type ImagenNoticia = {
@@ -155,7 +167,10 @@ export default function NoticiasFinancieras() {
   }
 
   return (
-    <section id="noticias" className="border-b border-slate-200 bg-slate-50">
+    <section
+      id="noticias"
+      className="border-b border-slate-200 bg-slate-50"
+    >
       <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
 
         {/* Encabezado */}
@@ -181,12 +196,12 @@ export default function NoticiasFinancieras() {
             <>
               {/* Imagen */}
               {noticia.imagenes.length > 0 && (
-                <div className="relative">
+                <div className="relative flex w-full justify-center bg-slate-100">
 
                   <img
                     src={noticia.imagenes[imagenActual].imagen_url}
                     alt={noticia.titulo}
-                    className="h-64 w-full object-cover md:h-105"
+                    className="block h-auto max-h-150 w-full object-contain"
                   />
 
                   {/* Flechas de imágenes */}

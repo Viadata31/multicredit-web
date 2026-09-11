@@ -141,7 +141,9 @@ Deno.serve(async (req) => {
             "application/json",
         },
         body: JSON.stringify({
+          // Se debe cambiar el correo de fromEmail de acuerdo al dominio
           from: `MULTICREDIT <${fromEmail}>`,
+          // Se debe cambiar el correo de destinationEmail de acuerdo al cliente
           to: [destinationEmail],
           subject: `Nuevo contacto web - ${record.nombre}`,
           html: `
