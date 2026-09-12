@@ -109,7 +109,7 @@ export function Footer() {
   
               {/* WhatsApp */}
               <a
-                href="https://wa.me/50768248726"
+                href="https://wa.me/50768248726?text=Hola%20Multicredit%2C%20me%20gustar%C3%ADa%20obtener%20informaci%C3%B3n%20sobre%20sus%20servicios."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-sm font-medium text-slate-700 transition hover:text-green-600"
