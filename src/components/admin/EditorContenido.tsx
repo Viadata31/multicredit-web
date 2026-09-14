@@ -250,7 +250,7 @@ export default function EditorContenido({
       {/* Área de escritura */}
       <EditorContent
         editor={editor}
-        className="min-h-87.5 px-4 py-3 text-sm outline-none [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-800"
+        className="min-h-87.5 px-4 py-3 text-sm outline-none [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-800 hover:[&_a]:cursor-pointer"
       />
     </div>
   );
