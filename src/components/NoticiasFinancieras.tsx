@@ -264,6 +264,11 @@ export default function NoticiasFinancieras() {
                   </p>
                 )}
 
+                <div 
+                  dangerouslySetInnerHTML={{ __html: noticia.contenido }} 
+                  className="mt-4 max-w-4xl text-base leading-7 text-slate-600 [&_a]:text-blue-600 [&_a]:underline hover:[&_a]:text-blue-800"
+                />
+
                 <button
                   type="button"
                   onClick={() => setMostrarContenido(true)}
