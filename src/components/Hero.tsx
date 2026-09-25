@@ -1,4 +1,3 @@
-
 import { CheckCircle2 } from "lucide-react";
 
 export function Hero() {
@@ -63,11 +62,13 @@ export function Hero() {
         </div>
 
         <div className="relative">
-          <div className="overflow-hidden rounded-3xl shadow-xl ring-1 ring-slate-200">
+          {/* Contenedor corregido con proporciones explícitas y seguras */}
+          <div className="w-full overflow-hidden rounded-3xl shadow-xl ring-1 ring-slate-200 aspect-4/3">
             <img
-              src="/images/hero-multicredit.jpg"
-              alt="Asesoría financiera Multicredit"
-              className="aspect-4/3 h-full w-full object-cover"
+              src="/images/hero-multicredit.webp" 
+              alt="Asesoría personalizada en las oficinas de Multicredit"
+              className="h-full w-full object-cover object-center"
+              loading="eager"
             />
           </div>
 
