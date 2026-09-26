@@ -58,13 +58,13 @@ export function Servicios() {
           </p>
 
           <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900 md:text-4xl">
-            Conoce algunas de las  soluciones que podemos evaluar según tu perfil financiero
+            Conoce algunas de las soluciones que podemos evaluar según tu perfil financiero
           </h2>
 
-          <p className="mt-4 text-lg leading-8 text-slate-600">
+          {/* <p className="mt-4 text-lg leading-8 text-slate-600">
             Conoce algunas de las soluciones que podemos evaluar según tus
             necesidades y perfil financiero.
-          </p>
+          </p> */}
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-6">
