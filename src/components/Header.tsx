@@ -51,8 +51,10 @@
 export function Header() {
   return (
     <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-2">
-        <div className="flex items-center justify-between">
+      <div className="mx-auto max-w-7xl px-6">
+    
+        {/* Encabezado principal */}
+        <div className="flex items-center justify-between py-2">
     
           {/* Logo */}
           <div className="flex items-center">
@@ -64,7 +66,7 @@ export function Header() {
             />
           </div>
     
-          {/* Menú desktop */}
+          {/* Menú para escritorio */}
           <nav className="hidden items-center gap-8 lg:flex">
             <a
               href="#servicios"
@@ -95,50 +97,51 @@ export function Header() {
             </a>
           </nav>
     
-          {/* Menú móvil */}
-          <details className="relative lg:hidden">
+          {/* Botón móvil */}
+          <details className="lg:hidden">
             <summary
-              className="flex cursor-pointer list-none flex-col gap-1.5 rounded-md p-2 text-slate-700 hover:bg-slate-100"
+              className="flex cursor-pointer list-none flex-col gap-1.5 rounded-md p-2 hover:bg-slate-100"
               aria-label="Abrir menú"
             >
-              <span className="block h-0.5 w-6 bg-current"></span>
-              <span className="block h-0.5 w-6 bg-current"></span>
-              <span className="block h-0.5 w-6 bg-current"></span>
+              <span className="h-0.5 w-6 bg-slate-700"></span>
+              <span className="h-0.5 w-6 bg-slate-700"></span>
+              <span className="h-0.5 w-6 bg-slate-700"></span>
             </summary>
     
-            <nav className="absolute right-0 z-50 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
+            {/* Menú móvil */}
+            <div className="border-t border-slate-200 py-2">
               <a
                 href="#servicios"
-                className="block rounded-md px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-orange-600"
+                className="block border-b border-slate-100 py-3 text-sm font-semibold text-slate-700 hover:text-orange-600"
               >
                 Servicios
               </a>
     
               <a
                 href="#beneficios"
-                className="block rounded-md px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-orange-600"
+                className="block border-b border-slate-100 py-3 text-sm font-semibold text-slate-700 hover:text-orange-600"
               >
                 Beneficios
               </a>
     
               <a
                 href="#como-funciona"
-                className="block rounded-md px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-orange-600"
+                className="block border-b border-slate-100 py-3 text-sm font-semibold text-slate-700 hover:text-orange-600"
               >
                 Cómo funciona
               </a>
     
               <a
                 href="#contacto"
-                className="block rounded-md px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-orange-600"
+                className="block py-3 text-sm font-semibold text-slate-700 hover:text-orange-600"
               >
                 Contacto
               </a>
-            </nav>
+            </div>
           </details>
     
         </div>
       </div>
     </header>
   );
-}
+} 
