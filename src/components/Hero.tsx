@@ -10,7 +10,7 @@ export function Hero() {
           </p>
 
           <h1 className="max-w-xl text-4xl font-black leading-tight tracking-tight text-slate-900 md:text-5xl lg:text-6xl">
-            Soluciones de crédito pensadas para ti
+            Soluciones de crédito diseñadas según tu necesidad
           </h1>
 
           <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">

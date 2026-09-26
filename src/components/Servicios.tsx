@@ -58,7 +58,7 @@ export function Servicios() {
           </p>
 
           <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900 md:text-4xl">
-            Opciones de crédito que se adaptan a ti
+            Conoce algunas de las  soluciones que podemos evaluar según tu perfil financiero
           </h2>
 
           <p className="mt-4 text-lg leading-8 text-slate-600">
