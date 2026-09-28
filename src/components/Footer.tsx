@@ -1,4 +1,5 @@
 
+import { MapPin } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -61,11 +62,31 @@ export function Footer() {
             <h3 className="text-sm font-bold uppercase tracking-wide text-slate-900">
               Multicredit
             </h3>
-
+          
             <div className="mt-4 space-y-3 text-sm text-slate-600">
-              <p>Panamá, República de Panamá</p>
-
               <p>
+                <a 
+                  href="https://maps.app.goo.gl/eKhDi6wnfhYvPC7Y6" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="group inline-flex items-start gap-2 rounded-md transition-colors hover:text-slate-950 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  title="Ver ubicación en Google Maps"
+                >
+                  {/* Icono de ubicación profesional */}
+                  <MapPin 
+                    className="mt-0.5 h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover:text-blue-600" 
+                    aria-hidden="true" 
+                  />
+                  
+                  {/* Texto con subrayado interactivo al pasar el cursor */}
+                  <span className="text-left group-hover:underline group-hover:underline-offset-4">
+                    Edificio Business Point, Avenida República del Perú, 
+                    Panamá, Panamá
+                  </span>
+                </a>
+              </p>
+          
+              <p className="pl-6 text-slate-500">
                 Contáctanos mediante el formulario y uno de nuestros asesores
                 se comunicará contigo.
               </p>
@@ -146,4 +167,6 @@ export function Footer() {
     </footer>
   );
 }
+
+
 
