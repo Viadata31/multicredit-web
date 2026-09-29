@@ -66,7 +66,7 @@ export function Footer() {
             <div className="mt-4 space-y-3 text-sm text-slate-600">
               <p>
                 <a 
-                  href="https://maps.app.goo.gl/eKhDi6wnfhYvPC7Y6" 
+                  href="https://maps.app.goo.gl/DuzfbuCLV6RHy3WT6" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="group inline-flex items-start gap-2 rounded-md transition-colors hover:text-slate-950 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-blue-600"
