@@ -22,7 +22,7 @@ export function Hero() {
           <div className="mt-8 flex flex-wrap gap-4">
             <a
               href="#contacto"
-              className="rounded-lg bg-orange-600 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-orange-700"
+              className="rounded-lg bg-orange-700 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-orange-600"
             >
               Solicitar información
             </a>
@@ -72,7 +72,7 @@ export function Hero() {
             />
           </div>
 
-          <div className="absolute -bottom-6 -left-6 hidden rounded-2xl bg-orange-600 px-6 py-5 text-white shadow-lg md:block">
+          <div className="absolute -bottom-6 -left-6 hidden rounded-2xl bg-[#1D4A7A] px-6 py-5 text-white shadow-lg md:block">
             <p className="text-sm font-semibold">
               Asesoría clara
             </p>
