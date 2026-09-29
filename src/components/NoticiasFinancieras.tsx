@@ -2,7 +2,7 @@
 //📐 Recomendación principal para la imagenes a subir 
 //Para las imágenes que subas al panel de administración:
 //1200 × 675 px
-//Es una proporción 16:9, muy adecuada para noticias web.
+//Es una proporción 16:9, adecuada para noticias web.
 
 
 import { useEffect, useState } from "react";
