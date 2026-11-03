@@ -20,28 +20,28 @@ export function Header() {
           <nav className="hidden items-center gap-8 lg:flex">
             <a
               href="#servicios"
-              className="text-sm font-semibold text-slate-700 transition-colors hover:text-orange-600"
+              className="text-lg font-semibold text-slate-700 transition-colors hover:text-orange-600"
             >
               Servicios
             </a>
     
             <a
               href="#beneficios"
-              className="text-sm font-semibold text-slate-700 transition-colors hover:text-orange-600"
+              className="text-lg font-semibold text-slate-700 transition-colors hover:text-orange-600"
             >
               Beneficios
             </a>
     
             <a
               href="#como-funciona"
-              className="text-sm font-semibold text-slate-700 transition-colors hover:text-orange-600"
+              className="text-lg font-semibold text-slate-700 transition-colors hover:text-orange-600"
             >
               Cómo funciona
             </a>
     
             <a
               href="#contacto"
-              className="text-sm font-semibold text-slate-700 transition-colors hover:text-orange-600"
+              className="text-lg font-semibold text-slate-700 transition-colors hover:text-orange-600"
             >
               Contacto
             </a>
