@@ -80,7 +80,7 @@ export function Footer() {
                   
                   {/* Texto con subrayado interactivo al pasar el cursor */}
                   <span className="text-left group-hover:underline group-hover:underline-offset-4">
-                    Edificio Business Point, Avenida República del Perú, 
+                    Edificio Business Point, Avenida Perú, 
                     Panamá, Panamá
                   </span>
                 </a>
